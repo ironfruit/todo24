@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_create">
+
+    <fragment
+        android:id="@+id/navigation_create"
+        android:name="com.wesleyfranks.todo24.ui.create.CreateFragment"
+        android:label="Todos"
+        tools:layout="@layout/fragment_create" />
+
+    <fragment
+        android:id="@+id/navigation_completed"
+        android:name="com.wesleyfranks.todo24.ui.completed.CompletedFragment"
+        android:label="Completed"
+        tools:layout="@layout/fragment_completed" />
+
+</navigation>

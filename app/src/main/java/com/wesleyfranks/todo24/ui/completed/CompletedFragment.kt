@@ -7,12 +7,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
 import com.wesleyfranks.todo24.data.TodoAdapter
 import com.wesleyfranks.todo24.data.TodoRepository
 import com.wesleyfranks.todo24.databinding.FragmentCompletedBinding
+import com.wesleyfranks.todo24.databinding.FragmentCreateBinding
 import com.wesleyfranks.todo24.util.ConstantVar
 import java.util.stream.Collectors
 
@@ -26,7 +28,8 @@ class CompletedFragment : Fragment(),
     }
 
     private lateinit var completedViewModel: CompletedViewModel
-    private lateinit var binding: FragmentCompletedBinding
+    private var _binding: FragmentCompletedBinding? = null
+    private val binding get() = _binding!!
     private lateinit var completeView: View
     private lateinit var adapter: TodoAdapter
 
@@ -40,7 +43,7 @@ class CompletedFragment : Fragment(),
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentCompletedBinding.inflate(layoutInflater)
+        _binding = FragmentCompletedBinding.inflate(layoutInflater)
         completeView = binding.root
         return completeView
     }
@@ -53,12 +56,20 @@ class CompletedFragment : Fragment(),
             Observer {
                 binding.completedRv.adapter = adapter.apply {
                     this.submitList(it)
-                    if (this.currentList.isEmpty()){
-                        binding.textCompleted.text = getString(R.string.completed_text_listempty)
-                    }
                 }
             })
+        completedViewModel.todosList.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "onViewCreated: TODOLIST OBSERVE")
+            if (it.isEmpty()) {
+                completedViewModel.status.postValue(getString(R.string.completed_text_listempty))
+            } else {
+                completedViewModel.status.postValue("")
+            }
+        })
         binding.completedRv.layoutManager = LinearLayoutManager(requireContext())
+        completedViewModel.status.observe(viewLifecycleOwner, Observer {
+            binding.textCompleted.text = it
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -82,11 +93,29 @@ class CompletedFragment : Fragment(),
     }
 
     override fun OnItemClicked(editViewTodo: Todo, pos: Int) {
-        TODO("Not yet implemented")
+        // edit/view
     }
 
     override fun OnItemDelete(todo: Todo, pos: Int) {
-        TODO("Not yet implemented")
+        val materialDialog = MaterialDialog(binding.root.context)
+        materialDialog.show {
+            cornerRadius(16f)
+            title(null,"Delete")
+            message(R.string.todo_dialog_delete_message)
+            positiveButton {
+                completedViewModel.deleteTodo(binding.root.context,todo)
+                Snackbar.make(binding.root, "Deleted Todo...", Snackbar.LENGTH_SHORT).setAction(
+                    "Undo",
+                    View.OnClickListener {
+                        // completedViewModel.status.postValue("")
+                        completedViewModel.insertTodo(binding.root.context, todo)
+                    }
+                ).show()
+            }
+            negativeButton {
+                it.dismiss()
+            }
+        }
     }
 
     override fun OnRadioButtonChecked(todo: Todo, pos: Int) {
@@ -110,6 +139,11 @@ class CompletedFragment : Fragment(),
                 Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
             }.show()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

@@ -14,6 +14,17 @@ class CompletedViewModel : ViewModel() {
 
     lateinit var todosList: LiveData<List<Todo>>
     lateinit var completedTodo: Todo
+    val status: MutableLiveData<String> = MutableLiveData()
+
+    init {
+        status.value = ""
+    }
+
+    // update a todo
+
+    fun insertTodo(context: Context, todo: Todo){
+        TodoRepository().insertTodo(context,todo)
+    }
 
     // delete a todo
 

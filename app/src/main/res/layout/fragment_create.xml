@@ -11,7 +11,7 @@
         android:id="@+id/create_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:itemCount="10"
+        tools:itemCount="7"
         app:spanCount="1"
         android:clipToPadding="false"
         android:paddingTop="8dp"

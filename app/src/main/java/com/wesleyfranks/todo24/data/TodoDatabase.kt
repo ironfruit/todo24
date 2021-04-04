@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Database(entities = [Todo::class], version = 2, exportSchema = false)
+@Database(entities = [Todo::class], version = 4, exportSchema = false)
 abstract class TodoDatabase : RoomDatabase(){
 
     abstract fun TodoDao(): TodoDao?

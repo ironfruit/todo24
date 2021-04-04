@@ -7,8 +7,11 @@ import androidx.room.*
 @Dao
 interface TodoDao {
 
-    @Query("SELECT * FROM todo_database")
+    @Query("SELECT * FROM todo_database WHERE completed = 0")
     fun getAllTodos(): LiveData<List<Todo>>
+
+    @Query("SELECT * FROM todo_database WHERE completed = 1")
+    fun getAllCompletedTodos(): LiveData<List<Todo>>
 
     @Insert
     fun insert(todo: Todo)

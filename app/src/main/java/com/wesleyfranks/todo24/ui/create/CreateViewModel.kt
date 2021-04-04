@@ -62,8 +62,6 @@ class CreateViewModel : ViewModel() {
         return todosList
     }
 
-    // view actions
-
     fun fabClicked(view: View, editTodo: Todo? = null){
         Log.d(TAG, "onViewCreated: I clicked FAB")
         val md = MaterialDialog(view.context, BottomSheet(LayoutMode.WRAP_CONTENT))

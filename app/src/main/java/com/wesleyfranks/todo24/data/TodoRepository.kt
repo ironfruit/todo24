@@ -46,6 +46,7 @@ class TodoRepository {
         initializeDB(context)
 
         CoroutineScope(IO).launch {
+            todoDatabase!!.clearAllTables()
             todoDatabase!!.TodoDao()!!.deleteAllTodos()
         }
     }

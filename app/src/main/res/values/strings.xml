@@ -5,4 +5,5 @@
     <string name="add_todo">Add Todo</string>
     <string name="todo_item_title">Clean the office</string>
     <string name="todo_item_timestamp">1400 03/24/2021</string>
+    <string name="delete">delete</string>
 </resources>

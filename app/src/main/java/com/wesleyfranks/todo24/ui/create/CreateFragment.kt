@@ -108,15 +108,14 @@ class CreateFragment : Fragment(),
         // need to delete item from room database
         val repo = TodoRepository()
         repo.updateTodo(binding.root.context, completedTodo)
-        Snackbar.make(binding.root,"Completed, " +
-                todo.title.take(ConstantVar().charlim)
+        Snackbar.make(binding.root,"Completed, \"" +
+                todo.title.take(ConstantVar().charlim) + "...\""
                 ,Snackbar.LENGTH_LONG).setAction("Undo")
         {
             completedTodo.completed = false
             adapter.currentList.add(completedTodo)
             adapter.submitList(adapter.currentList)
             repo.updateTodo(binding.root.context, completedTodo)
-
         }.show()
     }
 

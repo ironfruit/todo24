@@ -15,7 +15,10 @@ import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.databinding.TodoListItemBinding
 import com.wesleyfranks.todo24.util.ConstantVar
 
-class TodoAdapter(private val completedChecked: CompletedChecked, private val clickedTodo: ClickedTodo, private val deleteTodo: DeleteTodo) :
+class TodoAdapter(
+    private val completedChecked: CompletedChecked? = null,
+    private val clickedTodo: ClickedTodo? = null,
+    private val deleteTodo: DeleteTodo? = null) :
     ListAdapter<Todo, TodoAdapter.ViewHolder>(TodoDiffUtil()) {
 
     companion object{
@@ -25,7 +28,7 @@ class TodoAdapter(private val completedChecked: CompletedChecked, private val cl
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = TodoListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(itemBinding, completedChecked, clickedTodo, deleteTodo)
+        return ViewHolder(itemBinding, completedChecked!!, clickedTodo!!, deleteTodo!!)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -46,8 +49,14 @@ class TodoAdapter(private val completedChecked: CompletedChecked, private val cl
                 clickedTodo.OnItemClicked(todo,adapterPosition)
             }
 
+            setCompletedCheck(todo)
+
             itemBinding.todoItemCheck.setOnClickListener {
-                if (itemBinding.todoItemCheck.isChecked){
+                if (todo.completed){
+                    itemBinding.todoItemCheck.isChecked = true
+                    completedChecked.OnRadioButtonChecked(todo, adapterPosition)
+                }else{
+                    itemBinding.todoItemCheck.isChecked = false
                     completedChecked.OnRadioButtonChecked(todo, adapterPosition)
                 }
             }
@@ -58,6 +67,16 @@ class TodoAdapter(private val completedChecked: CompletedChecked, private val cl
 
             itemBinding.todoItemTitle.text = todo.title
             itemBinding.todoItemTimestamp.text = todo.timestamp
+        }
+
+        private fun setCompletedCheck(todo: Todo) {
+            if (todo.completed) {
+                itemBinding.todoItemCheck.isChecked = true
+                return
+            } else {
+                itemBinding.todoItemCheck.isChecked = false
+                return
+            }
         }
     }
 

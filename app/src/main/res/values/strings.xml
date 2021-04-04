@@ -18,4 +18,5 @@ Mauris eget mauris feugiat, laoreet ligula sit amet, lacinia ante. Nulla dui dui
     <string name="todo_item_timestamp">1400 03/24/2021</string>
     <string name="delete">delete</string>
     <string name="todo_dialog_delete_message">Are you sure you want to delete this todo?</string>
+    <string name="completed_text_listempty">No Completed Todos</string>
 </resources>

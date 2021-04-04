@@ -97,24 +97,26 @@ class CreateFragment : Fragment(),
     }
 
     override fun OnRadioButtonChecked(todo: Todo, pos: Int) {
-        // need to remove the item at position checked
         Log.d(TAG, "bind: adapter position -> $pos")
         val updatedList = adapter.currentList.stream().collect(Collectors.toList())
-        val completedTodo = updatedList[pos]
-        completedTodo.completed = true
-        updatedList.remove(completedTodo)
-        adapter.submitList(updatedList)
-        // need to delete item from room database
-        val repo = TodoRepository()
-        repo.updateTodo(binding.root.context, completedTodo)
-        Snackbar.make(binding.root,"Completed, \"" +
-                todo.title.take(ConstantVar().charlim) + "...\""
+        val updatedTodo = updatedList[pos]
+        updatedTodo.completed = true
+        if (todo.completed){
+            // need to remove the item at position checked
+            updatedList.remove(updatedTodo)
+            adapter.submitList(updatedList)
+            // need to delete item from room database
+            val repo = TodoRepository()
+            repo.updateTodo(binding.root.context, updatedTodo)
+            Snackbar.make(binding.root,"Completed, \"" +
+                    todo.title.take(ConstantVar().charlim) + "...\""
                 ,Snackbar.LENGTH_LONG).setAction("Undo")
-        {
-            completedTodo.completed = false
-            repo.updateTodo(binding.root.context, completedTodo)
-            Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
-        }.show()
+            {
+                updatedTodo.completed = false
+                repo.updateTodo(binding.root.context, updatedTodo)
+                Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
+            }.show()
+        }
     }
 
     override fun OnItemClicked(editViewTodo: Todo, pos: Int) {

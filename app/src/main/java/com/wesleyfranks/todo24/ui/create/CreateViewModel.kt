@@ -17,6 +17,8 @@ import com.wesleyfranks.todo24.data.Todo
 import com.wesleyfranks.todo24.data.TodoDao
 import com.wesleyfranks.todo24.data.TodoRepository
 import com.wesleyfranks.todo24.util.GetTimestamp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class CreateViewModel : ViewModel() {
 
@@ -26,10 +28,6 @@ class CreateViewModel : ViewModel() {
 
     lateinit var todosList: LiveData<List<Todo>>
     lateinit var createdTodo: Todo
-
-    fun CreateViewModel(todoDao: TodoDao) {
-        todosList = todoDao.getAllTodos()
-    }
 
     // insert a todo
 
@@ -58,9 +56,11 @@ class CreateViewModel : ViewModel() {
     // get all Todos
 
     fun getAllTodos(context: Context): LiveData<List<Todo>>{
-        todosList = TodoRepository().getAllTodos(context)
+        viewModelScope.launch {
+            todosList = TodoRepository().getAllTodos(context).asLiveData()
+        }
         return todosList
-    }
+}
 
     fun fabClicked(view: View, editTodo: Todo? = null){
         Log.d(TAG, "onViewCreated: I clicked FAB")

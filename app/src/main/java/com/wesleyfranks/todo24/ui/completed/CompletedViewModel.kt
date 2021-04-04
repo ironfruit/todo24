@@ -1,13 +1,45 @@
 package com.wesleyfranks.todo24.ui.completed
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.content.Context
+import androidx.lifecycle.*
+import com.wesleyfranks.todo24.data.Todo
+import com.wesleyfranks.todo24.data.TodoRepository
+import kotlinx.coroutines.launch
 
 class CompletedViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is completed Fragment"
+    companion object{
+        private const val TAG:String = "CompletedViewModel"
     }
-    val text: LiveData<String> = _text
+
+    lateinit var todosList: LiveData<List<Todo>>
+    lateinit var completedTodo: Todo
+
+    // delete a todo
+
+    fun deleteTodo(context: Context, todo: Todo){
+        TodoRepository().deleteTodo(context, todo)
+    }
+
+    // delete all todos
+
+    fun deleteAllTodos(context: Context){
+        TodoRepository().deleteAllTodos(context)
+    }
+
+    // update a todo
+
+    fun updateTodo(context: Context, todo: Todo){
+        TodoRepository().updateTodo(context,todo)
+    }
+
+    // get all Todos
+
+    fun getAllTodos(context: Context): LiveData<List<Todo>>{
+        viewModelScope.launch {
+            todosList = TodoRepository().getAllTodos(context).asLiveData()
+        }
+        return todosList
+    }
+
 }

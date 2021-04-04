@@ -6,13 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
 class TodoRepository {
 
     var todoDatabase: TodoDatabase? = null
-    lateinit var todoList: LiveData<List<Todo>>
+    lateinit var todoList: Flow<List<Todo>>
 
     fun initializeDB(context: Context){
         todoDatabase = TodoDatabase.getInstance(context)
@@ -22,7 +23,7 @@ class TodoRepository {
         initializeDB(context)
 
         CoroutineScope(IO).launch {
-            todoDatabase!!.TodoDao()!!.insert(todo)
+            todoDatabase!!.TodoDao().insert(todo)
         }
     }
 
@@ -30,7 +31,7 @@ class TodoRepository {
         initializeDB(context)
 
         CoroutineScope(IO).launch {
-            todoDatabase!!.TodoDao()!!.updateTodo(todo)
+            todoDatabase!!.TodoDao().updateTodo(todo)
         }
     }
 
@@ -38,7 +39,7 @@ class TodoRepository {
         initializeDB(context)
 
         CoroutineScope(IO).launch {
-            todoDatabase!!.TodoDao()!!.deleteTodo(todo)
+            todoDatabase!!.TodoDao().deleteTodo(todo)
         }
     }
 
@@ -47,13 +48,13 @@ class TodoRepository {
 
         CoroutineScope(IO).launch {
             todoDatabase!!.clearAllTables()
-            todoDatabase!!.TodoDao()!!.deleteAllTodos()
+            todoDatabase!!.TodoDao().deleteAllTodos()
         }
     }
 
-    fun getAllTodos(context: Context) : LiveData<List<Todo>>{
+    fun getAllTodos(context: Context) : Flow<List<Todo>>{
         initializeDB(context)
-        todoList = todoDatabase!!.TodoDao()!!.getAllTodos()
+        todoList = todoDatabase!!.TodoDao().getAllTodos()
         return todoList
     }
 

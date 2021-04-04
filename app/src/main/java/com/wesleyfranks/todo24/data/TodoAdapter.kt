@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
+import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.databinding.TodoListItemBinding
 import com.wesleyfranks.todo24.util.ConstantVar
 
@@ -42,7 +43,7 @@ class TodoAdapter(private val completedChecked: CompletedChecked, private val cl
         fun bind(todo: Todo) {
 
             itemBinding.root.setOnClickListener {
-                Snackbar.make(it,"Clicked ${todo.pk}",Snackbar.LENGTH_SHORT).show()
+                clickedTodo.OnItemClicked(todo,adapterPosition)
             }
 
             itemBinding.todoItemCheck.setOnClickListener {
@@ -52,12 +53,7 @@ class TodoAdapter(private val completedChecked: CompletedChecked, private val cl
             }
 
             itemBinding.todoItemDelete.setOnClickListener {
-                val materialDialog = MaterialDialog(itemBinding.root.context)
-                materialDialog.show {
-                    cornerRadius(5f)
-                    title(null,"Delete")
-                    message {  }
-                }
+                deleteTodo.OnItemDelete(todo,adapterPosition)
             }
 
             itemBinding.todoItemTitle.text = todo.title
@@ -82,7 +78,7 @@ class TodoAdapter(private val completedChecked: CompletedChecked, private val cl
     }
 
     interface ClickedTodo{
-        fun OnItemClicked(todo: Todo, pos: Int)
+        fun OnItemClicked(editViewTodo: Todo, pos: Int)
     }
 
     interface DeleteTodo{

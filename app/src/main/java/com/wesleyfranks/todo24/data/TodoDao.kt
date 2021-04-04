@@ -3,15 +3,16 @@ package com.wesleyfranks.todo24.data
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
 
     @Query("SELECT * FROM todo_database WHERE completed = 0")
-    fun getAllTodos(): LiveData<List<Todo>>
+    fun getAllTodos(): Flow<List<Todo>>
 
     @Query("SELECT * FROM todo_database WHERE completed = 1")
-    fun getAllCompletedTodos(): LiveData<List<Todo>>
+    fun getAllCompletedTodos(): Flow<List<Todo>>
 
     @Insert
     fun insert(todo: Todo)

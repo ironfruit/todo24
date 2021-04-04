@@ -1,32 +1,28 @@
 package com.wesleyfranks.todo24.ui.create
 
-import android.graphics.Canvas
 import android.os.Bundle
-import android.text.InputFilter
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.EditText
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.callbacks.onDismiss
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
 import com.wesleyfranks.todo24.data.TodoAdapter
 import com.wesleyfranks.todo24.data.TodoRepository
 import com.wesleyfranks.todo24.databinding.FragmentCreateBinding
 import com.wesleyfranks.todo24.util.ConstantVar
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import java.util.*
+import com.wesleyfranks.todo24.util.GetTimestamp
+import java.util.stream.Collectors
 
 class CreateFragment : Fragment(),
         TodoAdapter.ClickedTodo,
@@ -104,10 +100,11 @@ class CreateFragment : Fragment(),
     override fun OnRadioButtonChecked(todo: Todo, pos: Int) {
         // need to remove the item at position checked
         Log.d(TAG, "bind: adapter position -> $pos")
-        val completedTodo = adapter.currentList[pos]
+        val updatedList = adapter.currentList.stream().collect(Collectors.toList())
+        val completedTodo = updatedList[pos]
         completedTodo.completed = true
-        adapter.currentList.remove(completedTodo)
-        adapter.submitList(adapter.currentList)
+        updatedList.remove(completedTodo)
+        adapter.submitList(updatedList)
         // need to delete item from room database
         val repo = TodoRepository()
         repo.updateTodo(binding.root.context, completedTodo)
@@ -123,12 +120,61 @@ class CreateFragment : Fragment(),
         }.show()
     }
 
-    override fun OnItemClicked(todo: Todo, pos: Int) {
-        TODO("Not yet implemented")
+    override fun OnItemClicked(editViewTodo: Todo, pos: Int) {
+        view?.let { MaterialDialog(it.context, BottomSheet(LayoutMode.WRAP_CONTENT)) }?.show {
+            cornerRadius(16f)
+            title(null, "Create Todo")
+            customView(
+                    viewRes = R.layout.create_todo_bsd,
+                    null,
+                    false,
+                    false,
+                    false,
+                    true
+            )
+            val et = getCustomView().findViewById<EditText>(R.id.create_todo_bsd_et)
+            val button = getCustomView().findViewById<Button>(R.id.create_todo_bsd_savebutton)
+            et.requestFocus()
+            et.setText(editViewTodo.title)
+            button.setOnClickListener {
+                val todoTitle = et.editableText.toString().trim()
+                val todoTimestamp = GetTimestamp().getTimeOnDevice()
+                editViewTodo.title = todoTitle
+                editViewTodo.timestamp = todoTimestamp
+                Log.d(TAG, "fabClicked: SAVE BUTTON CLICKED -> $editViewTodo")
+                createViewModel.updateTodo(view.context, editViewTodo)
+                this.dismiss()
+                Snackbar.make(view, "Todo viewed/edited...", Snackbar.LENGTH_SHORT).setAction(
+                        "Undo",
+                        View.OnClickListener {
+                            createViewModel.deleteTodo(view.context, editViewTodo)
+                            createViewModel.fabClicked(view, editViewTodo)
+                        }
+                ).show()
+            }
+        }
     }
 
     override fun OnItemDelete(todo: Todo, pos: Int) {
-        TODO("Not yet implemented")
+        val materialDialog = MaterialDialog(binding.root.context)
+        materialDialog.show {
+            cornerRadius(16f)
+            title(null,"Delete")
+            message(R.string.todo_dialog_delete_message)
+            positiveButton {
+                createViewModel.deleteTodo(binding.root.context,todo)
+                Snackbar.make(binding.root, "Deleted Todo...", Snackbar.LENGTH_SHORT).setAction(
+                        "Undo",
+                        View.OnClickListener {
+                            createViewModel.insertTodo(binding.root.context, todo)
+                        }
+                ).show()
+            }
+            negativeButton {
+                it.dismiss()
+            }
+        }
+
     }
 
 }

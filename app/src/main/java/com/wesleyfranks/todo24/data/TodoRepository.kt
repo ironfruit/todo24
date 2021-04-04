@@ -58,5 +58,11 @@ class TodoRepository {
         return todoList
     }
 
+    fun getAllCompletedTodos(context: Context) : Flow<List<Todo>>{
+        initializeDB(context)
+        todoList = todoDatabase!!.TodoDao().getAllCompletedTodos()
+        return todoList
+    }
+
 }
 

@@ -35,9 +35,9 @@ class CompletedViewModel : ViewModel() {
 
     // get all Todos
 
-    fun getAllTodos(context: Context): LiveData<List<Todo>>{
+    fun getAllCompletedTodos(context: Context): LiveData<List<Todo>>{
         viewModelScope.launch {
-            todosList = TodoRepository().getAllTodos(context).asLiveData()
+            todosList = TodoRepository().getAllCompletedTodos(context).asLiveData()
         }
         return todosList
     }

@@ -38,7 +38,6 @@ class CreateFragment : Fragment(),
     private val binding get() = _binding!!
     private lateinit var createView: View
     private lateinit var adapter:TodoAdapter
-    lateinit var materialDialog: MaterialDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,9 +112,8 @@ class CreateFragment : Fragment(),
                 ,Snackbar.LENGTH_LONG).setAction("Undo")
         {
             completedTodo.completed = false
-            adapter.currentList.add(completedTodo)
-            adapter.submitList(adapter.currentList)
             repo.updateTodo(binding.root.context, completedTodo)
+            Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
         }.show()
     }
 

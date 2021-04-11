@@ -22,7 +22,6 @@ import com.wesleyfranks.todo24.data.TodoRepository
 import com.wesleyfranks.todo24.databinding.FragmentCreateBinding
 import com.wesleyfranks.todo24.util.ConstantVar
 import com.wesleyfranks.todo24.util.GetTimestamp
-import java.util.stream.Collectors
 
 class CreateFragment : Fragment(),
         TodoAdapter.ClickedTodo,
@@ -97,12 +96,8 @@ class CreateFragment : Fragment(),
     }
 
     override fun OnRadioButtonChecked(todo: Todo) {
-        val updatedList = adapter.currentList.stream().collect(Collectors.toList())
         val updatedTodo = todo.copy(completed = !todo.completed)
         if (updatedTodo.completed){
-            // need to remove the item at position checked
-            updatedList.remove(updatedTodo)
-            adapter.submitList(updatedList)
             // need to delete item from room database
             val repo = TodoRepository()
             repo.updateTodo(binding.root.context, updatedTodo)
@@ -110,14 +105,13 @@ class CreateFragment : Fragment(),
                     todo.title.take(ConstantVar().charlim) + "...\""
                 ,Snackbar.LENGTH_LONG).setAction("Undo")
             {
-                updatedTodo.completed = false
-                repo.updateTodo(binding.root.context, updatedTodo)
+                repo.updateTodo(binding.root.context, todo)
                 Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
             }.show()
         }
     }
 
-    override fun OnItemClicked(editViewTodo: Todo, pos: Int) {
+    override fun OnItemClicked(todo: Todo) {
         view?.let { MaterialDialog(it.context, BottomSheet(LayoutMode.WRAP_CONTENT)) }?.show {
             cornerRadius(16f)
             title(null, "Create Todo")
@@ -132,27 +126,26 @@ class CreateFragment : Fragment(),
             val et = getCustomView().findViewById<EditText>(R.id.create_todo_bsd_et)
             val button = getCustomView().findViewById<Button>(R.id.create_todo_bsd_savebutton)
             et.requestFocus()
-            et.setText(editViewTodo.title)
+            et.setText(todo.title)
             button.setOnClickListener {
                 val todoTitle = et.editableText.toString().trim()
                 val todoTimestamp = GetTimestamp().getTimeOnDevice()
-                editViewTodo.title = todoTitle
-                editViewTodo.timestamp = todoTimestamp
-                Log.d(TAG, "fabClicked: SAVE BUTTON CLICKED -> $editViewTodo")
-                createViewModel.updateTodo(view.context, editViewTodo)
+                val updatedTodo = todo.copy(title = todoTitle, timestamp = todoTimestamp)
+                Log.d(TAG, "fabClicked: SAVE BUTTON CLICKED -> $todo")
+                createViewModel.updateTodo(view.context, updatedTodo)
                 this.dismiss()
                 Snackbar.make(view, "Todo viewed/edited...", Snackbar.LENGTH_SHORT).setAction(
                         "Undo",
                         View.OnClickListener {
-                            createViewModel.deleteTodo(view.context, editViewTodo)
-                            createViewModel.fabClicked(view, editViewTodo)
+                            createViewModel.deleteTodo(view.context, todo)
+                            createViewModel.fabClicked(view, todo)
                         }
                 ).show()
             }
         }
     }
 
-    override fun OnItemDelete(todo: Todo, pos: Int) {
+    override fun OnItemDelete(todo: Todo) {
         val materialDialog = MaterialDialog(binding.root.context)
         materialDialog.show {
             cornerRadius(16f)

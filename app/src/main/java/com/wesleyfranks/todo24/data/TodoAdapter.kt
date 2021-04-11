@@ -46,7 +46,7 @@ class TodoAdapter(
         fun bind(todo: Todo) {
 
             itemBinding.root.setOnClickListener {
-                clickedTodo.OnItemClicked(todo,adapterPosition)
+                clickedTodo.OnItemClicked(todo)
             }
 
             setCompletedCheck(todo)
@@ -62,7 +62,7 @@ class TodoAdapter(
             }
 
             itemBinding.todoItemDelete.setOnClickListener {
-                deleteTodo.OnItemDelete(todo,adapterPosition)
+                deleteTodo.OnItemDelete(todo)
             }
 
             itemBinding.todoItemTitle.text = todo.title
@@ -97,10 +97,10 @@ class TodoAdapter(
     }
 
     interface ClickedTodo{
-        fun OnItemClicked(editViewTodo: Todo, pos: Int)
+        fun OnItemClicked(editViewTodo: Todo)
     }
 
     interface DeleteTodo{
-        fun OnItemDelete(todo: Todo, pos: Int)
+        fun OnItemDelete(todo: Todo)
     }
 }

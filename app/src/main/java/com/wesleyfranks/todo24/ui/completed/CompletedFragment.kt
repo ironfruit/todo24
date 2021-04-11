@@ -92,11 +92,11 @@ class CompletedFragment : Fragment(),
         Snackbar.make(binding.root,"All toods have been deleted...", Snackbar.LENGTH_LONG).show()
     }
 
-    override fun OnItemClicked(editViewTodo: Todo, pos: Int) {
+    override fun OnItemClicked(editViewTodo: Todo) {
         // edit/view
     }
 
-    override fun OnItemDelete(todo: Todo, pos: Int) {
+    override fun OnItemDelete(todo: Todo) {
         val materialDialog = MaterialDialog(binding.root.context)
         materialDialog.show {
             cornerRadius(16f)
@@ -118,15 +118,9 @@ class CompletedFragment : Fragment(),
         }
     }
 
-    override fun OnRadioButtonChecked(todo: Todo, pos: Int) {
-        Log.d(TAG, "bind: adapter position -> $pos")
-        val updatedList = adapter.currentList.stream().collect(Collectors.toList())
-        val updatedTodo = updatedList[pos]
-        updatedTodo.completed = false
+    override fun OnRadioButtonChecked(todo: Todo) {
+        val updatedTodo = todo.copy(completed = !todo.completed)
         if (!todo.completed){
-            // need to remove the item at position checked
-            updatedList.remove(updatedTodo)
-            adapter.submitList(updatedList)
             // need to delete item from room database
             val repo = TodoRepository()
             repo.updateTodo(binding.root.context, updatedTodo)
@@ -134,8 +128,7 @@ class CompletedFragment : Fragment(),
                     todo.title.take(ConstantVar().charlim) + "...\""
                 ,Snackbar.LENGTH_LONG).setAction("Undo")
             {
-                updatedTodo.completed = true
-                repo.updateTodo(binding.root.context, updatedTodo)
+                repo.updateTodo(binding.root.context, todo)
                 Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
             }.show()
         }

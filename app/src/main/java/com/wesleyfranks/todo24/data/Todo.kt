@@ -11,5 +11,5 @@ data class Todo (
         val completed: Boolean = false
 ){
         @PrimaryKey(autoGenerate = true)
-        val pk:Int = 0
+        var pk:Int = 0
 }

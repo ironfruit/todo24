@@ -4,13 +4,12 @@ import androidx.room.*
 import java.sql.RowId
 
 
-
-@Entity(tableName = "todo_database")
+@Entity(tableName = "todo_table")
 data class Todo (
-        @ColumnInfo(name = "title") var title: String,
-        @ColumnInfo(name = "timestamp") var timestamp: String,
-        @ColumnInfo(name = "completed") var completed: Boolean = false
+        val title: String,
+        val timestamp: String,
+        val completed: Boolean = false
 ){
         @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "primaryKey") var pk:Int = 0
+        val pk:Int = 0
 }

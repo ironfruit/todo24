@@ -66,10 +66,10 @@ class CompletedFragment : Fragment(),
                 completedViewModel.status.postValue("")
             }
         })
-        binding.completedRv.layoutManager = LinearLayoutManager(requireContext())
         completedViewModel.status.observe(viewLifecycleOwner, Observer {
             binding.textCompleted.text = it
         })
+        binding.completedRv.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

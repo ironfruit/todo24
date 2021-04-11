@@ -54,10 +54,10 @@ class TodoAdapter(
             itemBinding.todoItemCheck.setOnClickListener {
                 if (todo.completed){
                     itemBinding.todoItemCheck.isChecked = true
-                    completedChecked.OnRadioButtonChecked(todo, adapterPosition)
+                    completedChecked.OnRadioButtonChecked(todo)
                 }else{
                     itemBinding.todoItemCheck.isChecked = false
-                    completedChecked.OnRadioButtonChecked(todo, adapterPosition)
+                    completedChecked.OnRadioButtonChecked(todo)
                 }
             }
 
@@ -93,7 +93,7 @@ class TodoAdapter(
 
 
     interface CompletedChecked{
-        fun OnRadioButtonChecked(todo: Todo, pos: Int)
+        fun OnRadioButtonChecked(todo: Todo)
     }
 
     interface ClickedTodo{

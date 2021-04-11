@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TodoDao {
 
-    @Query("SELECT * FROM todo_database WHERE completed = 0")
+    @Query("SELECT * FROM todo_table WHERE completed = 0")
     fun getAllTodos(): Flow<List<Todo>>
 
-    @Query("SELECT * FROM todo_database WHERE completed = 1")
+    @Query("SELECT * FROM todo_table WHERE completed = 1")
     fun getAllCompletedTodos(): Flow<List<Todo>>
 
     @Insert
@@ -20,7 +20,7 @@ interface TodoDao {
     @Delete
     fun deleteTodo(todo: Todo)
 
-    @Query("DELETE FROM todo_database")
+    @Query("DELETE FROM todo_table")
     fun deleteAllTodos()
 
     @Update

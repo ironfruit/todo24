@@ -96,12 +96,10 @@ class CreateFragment : Fragment(),
         _binding = null
     }
 
-    override fun OnRadioButtonChecked(todo: Todo, pos: Int) {
-        Log.d(TAG, "bind: adapter position -> $pos")
+    override fun OnRadioButtonChecked(todo: Todo) {
         val updatedList = adapter.currentList.stream().collect(Collectors.toList())
-        val updatedTodo = updatedList[pos]
-        updatedTodo.completed = true
-        if (todo.completed){
+        val updatedTodo = todo.copy(completed = !todo.completed)
+        if (updatedTodo.completed){
             // need to remove the item at position checked
             updatedList.remove(updatedTodo)
             adapter.submitList(updatedList)

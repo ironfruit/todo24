@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.databinding.TodoListItemBinding
 import com.wesleyfranks.todo24.util.ConstantVar
+import com.wesleyfranks.todo24.util.GetTimestamp
 
 class TodoAdapter(
     private val completedChecked: CompletedChecked? = null,
@@ -45,28 +46,24 @@ class TodoAdapter(
 
         fun bind(todo: Todo) {
 
+            itemBinding.todoItemTitle.text = todo.title
+            itemBinding.todoItemTimestamp.text = GetTimestamp().formateNonMilDateTime(todo.timestamp)
+
+            setCompletedCheck(todo)
+
             itemBinding.root.setOnClickListener {
                 clickedTodo.OnItemClicked(todo)
             }
 
-            setCompletedCheck(todo)
-
             itemBinding.todoItemCheck.setOnClickListener {
-                if (todo.completed){
-                    itemBinding.todoItemCheck.isChecked = true
-                    completedChecked.OnRadioButtonChecked(todo)
-                }else{
-                    itemBinding.todoItemCheck.isChecked = false
-                    completedChecked.OnRadioButtonChecked(todo)
-                }
+                completedChecked.OnRadioButtonChecked(todo)
+                itemBinding.todoItemCheck.isChecked = todo.completed
             }
 
             itemBinding.todoItemDelete.setOnClickListener {
                 deleteTodo.OnItemDelete(todo)
             }
 
-            itemBinding.todoItemTitle.text = todo.title
-            itemBinding.todoItemTimestamp.text = todo.timestamp
         }
 
         private fun setCompletedCheck(todo: Todo) {
@@ -97,7 +94,7 @@ class TodoAdapter(
     }
 
     interface ClickedTodo{
-        fun OnItemClicked(editViewTodo: Todo)
+        fun OnItemClicked(todo: Todo)
     }
 
     interface DeleteTodo{

@@ -1,5 +1,6 @@
 package com.wesleyfranks.todo24.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.*
@@ -7,6 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
+
+    companion object{
+        private const val TAG:String = "TodoDao"
+    }
 
     @Query("SELECT * FROM todo_table WHERE completed = 0")
     fun getAllTodos(): Flow<List<Todo>>
@@ -24,6 +29,8 @@ interface TodoDao {
     fun deleteAllTodos()
 
     @Update
-    fun updateTodo(todo: Todo)
+    fun updateTodo(todo: Todo) {
+        Log.d(TAG, "updateTodo: todo -> $todo")
+    }
 
 }

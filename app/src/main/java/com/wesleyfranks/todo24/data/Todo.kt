@@ -7,10 +7,10 @@ import java.time.LocalDateTime
 
 @Entity(tableName = "todo_table")
 data class Todo (
-        val title: String,
-        val timestamp: Long,
-        val completed: Boolean = false
+        @PrimaryKey(autoGenerate = true) var pk:Int = 0,
+        var title: String,
+        var timestamp: Long,
+        var completed: Boolean = false
 ){
-        @PrimaryKey(autoGenerate = true)
-        var pk:Int = 0
+
 }

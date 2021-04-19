@@ -27,7 +27,6 @@ class TodoRepository {
 
     fun insertTodo(context: Context, todo: Todo){
         initializeDB(context)
-
         CoroutineScope(IO).launch {
             todoDatabase!!.TodoDao().insert(todo)
         }
@@ -35,7 +34,6 @@ class TodoRepository {
 
     fun updateTodo(context: Context, todo: Todo){
         initializeDB(context)
-        Log.d(TAG, "updateTodo: todo -> $todo")
         CoroutineScope(IO).launch {
             todoDatabase!!.TodoDao().updateTodo(todo)
         }
@@ -44,7 +42,6 @@ class TodoRepository {
     fun deleteTodo(context: Context, todo: Todo){
         Log.d(TAG, "deleteTodo: ${todo.title}")
         initializeDB(context)
-
         CoroutineScope(IO).launch {
             todoDatabase!!.TodoDao().deleteTodo(todo)
         }
@@ -52,7 +49,6 @@ class TodoRepository {
 
     fun deleteAllTodos(context: Context){
         initializeDB(context)
-
         CoroutineScope(IO).launch {
             todoDatabase!!.clearAllTables()
             todoDatabase!!.TodoDao().deleteAllTodos()

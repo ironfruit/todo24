@@ -1,8 +1,10 @@
 package com.wesleyfranks.todo24.ui.create
 
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
@@ -14,11 +16,13 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
 import com.wesleyfranks.todo24.data.TodoAdapter
 import com.wesleyfranks.todo24.databinding.FragmentCreateBinding
+import com.wesleyfranks.todo24.ui.completed.CompletedFragment
 import com.wesleyfranks.todo24.util.GetTimestamp
 
 class CreateFragment : Fragment(),
@@ -35,11 +39,6 @@ class CreateFragment : Fragment(),
     private val binding get() = _binding!!
     private lateinit var createView: View
     private lateinit var createAdapter:TodoAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -60,50 +59,27 @@ class CreateFragment : Fragment(),
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
         }
-        createViewModel.getAllTodos(binding.root.context).observe(viewLifecycleOwner, Observer {
+        createViewModel.getAllTodos(requireContext()).observe(viewLifecycleOwner, Observer {
             createAdapter.submitList(it)
         })
         binding.createFab.setOnClickListener {
             fabClicked(binding.root)
         }
-
+        createViewModel.todosList.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "onViewCreated: TODOLIST OBSERVE")
+            if (it.isEmpty()) {
+                createViewModel.status.postValue(getString(R.string.create_text_listempty))
+            } else {
+                createViewModel.status.postValue("")
+            }
+        })
+        createViewModel.status.observe(viewLifecycleOwner, Observer {
+            binding.textCompleted.text = it
+        })
+        setHasOptionsMenu(true)
     }
 
-    private fun fabClicked(view: View, todo: Todo? = null){
-        Log.d(TAG, "onViewCreated: I clicked FAB")
-        val md = MaterialDialog(view.context, BottomSheet(LayoutMode.WRAP_CONTENT))
-        md.show {
-            cornerRadius(16f)
-            title(null, "Create Todo")
-            customView(
-                viewRes = R.layout.create_todo_bsd,
-                null,
-                false,
-                false,
-                false,
-                true
-            )
 
-            val et = getCustomView().findViewById<EditText>(R.id.create_todo_bsd_et)
-            val button = getCustomView().findViewById<Button>(R.id.create_todo_bsd_savebutton)
-            et.requestFocus()
-            if (todo != null) {
-                et.setText(todo.title)
-            }
-            button.setOnClickListener {
-                val createdTodo = Todo(title = et.editableText.toString().trim(),timestamp = GetTimestamp().getCurrentTime())
-                createViewModel.insertTodo(view.context, createdTodo)
-                this.dismiss()
-                Snackbar.make(view, "Todo Added...", Snackbar.LENGTH_SHORT).setAction(
-                        "Undo",
-                        View.OnClickListener {
-                            createViewModel.deleteTodo(binding.root.context, createdTodo)
-                            fabClicked(view, createdTodo)
-                        }
-                ).show()
-            }
-        }
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.create_options, menu)
@@ -131,45 +107,41 @@ class CreateFragment : Fragment(),
     }
 
     override fun OnRadioButtonChecked(todo: Todo) {
-        val updatedTodo = todo.copy(completed = !todo.completed)
-        createViewModel.updateTodo(requireContext(),updatedTodo)
+        todo.completed = !todo.completed
+        createViewModel.updateTodo(binding.root.context, todo)
     }
 
     override fun OnItemClicked(todo: Todo) {
         Log.e(TAG, "OnItemClicked: todo -> $todo")
-        view?.let { MaterialDialog(it.context, BottomSheet(LayoutMode.WRAP_CONTENT)) }?.show {
+        val md = MaterialDialog(binding.root.context, BottomSheet(LayoutMode.WRAP_CONTENT))
+        md.show {
             cornerRadius(16f)
             title(null, "Create Todo")
-            customView(
-                    viewRes = R.layout.create_todo_bsd,
-                    null,
-                    false,
-                    false,
-                    false,
-                    true
-            )
+            message(null, "Type todo and then tap save.")
+            customView(viewRes = R.layout.create_todo_bsd)
             val et = getCustomView().findViewById<EditText>(R.id.create_todo_bsd_et)
-            val button = getCustomView().findViewById<Button>(R.id.create_todo_bsd_savebutton)
             et.requestFocus()
             et.setText(todo.title)
-            button.setOnClickListener {
+            et.setSelection(et.text.length)
+            positiveButton(R.string.todo_bsd_save) {
                 val todoTitle = et.editableText.toString().trim()
-                val todoTimestamp = GetTimestamp().getCurrentTime()
-                val tempTodo = todo.copy(title = todoTitle,timestamp = todoTimestamp)
-                Log.d(TAG, "fabClicked: SAVE BUTTON CLICKED -> $tempTodo")
-                createViewModel.updateTodo(view.context, tempTodo)
-                this.dismiss()
-                Snackbar.make(view, "Todo viewed/edited...", Snackbar.LENGTH_SHORT).setAction(
+                todo.title = todoTitle
+                Log.d(TAG, "fabClicked: SAVE BUTTON CLICKED -> $todo")
+                createViewModel.updateTodo(binding.root.context, todo)
+                Snackbar.make(binding.root, "Todo viewed/edited...", Snackbar.LENGTH_LONG).setAction(
                         "Undo",
                         View.OnClickListener {
-                            createViewModel.deleteTodo(view.context, tempTodo)
-                            fabClicked(view, tempTodo)
+                            createViewModel.deleteTodo(binding.root.context, todo)
+                            OnItemClicked(todo)
                         }
                 ).show()
-
-                }
             }
+            negativeButton(android.R.string.cancel){
+                this.dismiss()
+            }
+            lifecycleOwner(this@CreateFragment)
         }
+    }
 
     override fun OnItemDelete(todo: Todo) {
         val materialDialog = MaterialDialog(binding.root.context)
@@ -189,6 +161,56 @@ class CreateFragment : Fragment(),
             negativeButton {
                 it.dismiss()
             }
+        }
+    }
+
+    fun fabClicked(view: View, todo: Todo? = null){
+        Log.d(TAG, "onViewCreated: I clicked FAB")
+        val md = MaterialDialog(view.context, BottomSheet(LayoutMode.WRAP_CONTENT))
+        md.show {
+            cornerRadius(16f)
+            title(null, "Create Todo")
+            message(null, "Type todo and then tap save.")
+            customView(viewRes = R.layout.create_todo_bsd)
+            val et = getCustomView().findViewById<EditText>(R.id.create_todo_bsd_et)
+            et.requestFocus()
+            if (todo != null) {
+                et.setText(todo.title)
+                et.setSelection(et.text.length)
+            }
+            positiveButton(R.string.todo_bsd_save) {
+                val todoTitle = et.editableText.toString().trim()
+                val todoTimestamp = GetTimestamp().getCurrentTime()
+                if(todo != null){
+                    if (todo.title == todoTitle){
+                        Snackbar.make(binding.root, "Todo Not Updated.", Snackbar.LENGTH_SHORT).show()
+                    }else{
+                        todo.title = todoTitle
+                        createViewModel.updateTodo(binding.root.context, todo)
+                        this.dismiss()
+                        Snackbar.make(binding.root, "Todo Updated...", Snackbar.LENGTH_SHORT).setAction(
+                                "Undo",
+                                View.OnClickListener {
+                                    createViewModel.deleteTodo(binding.root.context, todo)
+                                    fabClicked(view, todo)
+                                }
+                        ).show()
+                    }
+                }else{
+                    val newTodo = Todo(title = todoTitle,timestamp = todoTimestamp)
+                    createViewModel.insertTodo(view.context, newTodo)
+                    this.dismiss()
+                    Snackbar.make(binding.root, "Todo Added...", Snackbar.LENGTH_SHORT).setAction(
+                            "Undo",
+                            View.OnClickListener {
+                                createViewModel.deleteTodo(binding.root.context, newTodo)
+                                fabClicked(view, newTodo)
+                            }
+                    ).show()
+                }
+            }
+            negativeButton(android.R.string.cancel)
+            lifecycleOwner(this@CreateFragment)
         }
     }
 

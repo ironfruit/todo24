@@ -26,7 +26,6 @@ class TodoAdapter(
         private const val TAG = "TodoAdapter"
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = TodoListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(itemBinding, completedChecked!!, clickedTodo!!, deleteTodo!!)
@@ -58,6 +57,7 @@ class TodoAdapter(
             itemBinding.todoItemCheck.setOnClickListener {
                 completedChecked.OnRadioButtonChecked(todo)
                 itemBinding.todoItemCheck.isChecked = todo.completed
+                Log.d(TAG, "bind: todoItemCheck isChecked -> ${itemBinding.todoItemCheck.isChecked}")
             }
 
             itemBinding.todoItemDelete.setOnClickListener {
@@ -77,12 +77,18 @@ class TodoAdapter(
         }
     }
 
+    override fun submitList(list: List<Todo>?) {
+        super.submitList(list?.let { ArrayList(it) })
+    }
+
     class TodoDiffUtil : DiffUtil.ItemCallback<Todo>() {
         override fun areItemsTheSame(oldItem: Todo, newItem: Todo): Boolean {
+            Log.d(TAG, "areItemsTheSame: oldItem $oldItem -- newItem $newItem")
             return oldItem === newItem
         }
 
         override fun areContentsTheSame(oldItem: Todo, newItem: Todo): Boolean {
+            Log.d(TAG, "areContentsTheSame: oldItem.Title ${oldItem.title} newItem.Title ${newItem.title}")
             return oldItem.title == newItem.title
         }
 

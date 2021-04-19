@@ -26,6 +26,11 @@ class CreateViewModel : ViewModel() {
 
     lateinit var todosList: LiveData<List<Todo>>
     lateinit var createdTodo: Todo
+    val status: MutableLiveData<String> = MutableLiveData()
+
+    init {
+        status.value = ""
+    }
 
     // insert a todo
 

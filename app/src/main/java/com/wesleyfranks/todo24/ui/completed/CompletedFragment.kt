@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
@@ -93,44 +94,37 @@ class CompletedFragment : Fragment(),
         Snackbar.make(binding.root,"All toods have been deleted...", Snackbar.LENGTH_LONG).show()
     }
 
-    override fun OnItemClicked(editViewTodo: Todo) {
+    override fun OnItemClicked(todo: Todo) {
         // edit/view
+        Log.d(TAG, "OnItemClicked: todo -> $todo")
     }
 
     override fun OnItemDelete(todo: Todo) {
         val materialDialog = MaterialDialog(binding.root.context)
         materialDialog.show {
             cornerRadius(16f)
-            title(null,"Delete")
+            title(R.string.delete)
             message(R.string.todo_dialog_delete_message)
-            positiveButton {
+            positiveButton(android.R.string.yes) {
                 completedViewModel.deleteTodo(binding.root.context,todo)
-                Snackbar.make(binding.root, "Deleted Todo...", Snackbar.LENGTH_SHORT).setAction(
+                Snackbar.make(binding.root, "Deleted Todo.", Snackbar.LENGTH_SHORT).setAction(
                     "Undo",
                     View.OnClickListener {
                         completedViewModel.insertTodo(binding.root.context, todo)
                     }
                 ).show()
             }
-            negativeButton {
+            negativeButton(android.R.string.no) {
                 it.dismiss()
             }
+            lifecycleOwner(this@CompletedFragment)
+
         }
     }
 
     override fun OnRadioButtonChecked(todo: Todo) {
-        val updatedTodo = todo.copy(completed = !todo.completed)
-        if (!todo.completed){
-            // need to delete item from room database
-            completedViewModel.updateTodo(binding.root.context, updatedTodo)
-            Snackbar.make(binding.root,"Todo has been uncompleted, \"" +
-                    todo.title.take(ConstantVar().charlim) + "...\""
-                ,Snackbar.LENGTH_LONG).setAction("Undo")
-            {
-                completedViewModel.updateTodo(binding.root.context, todo)
-                Snackbar.make(binding.root,"Todo has been updated...",Snackbar.LENGTH_SHORT).show()
-            }.show()
-        }
+        todo.completed = !todo.completed
+        completedViewModel.updateTodo(binding.root.context, todo)
     }
 
     override fun onDestroyView() {

@@ -13,10 +13,10 @@ interface TodoDao {
         private const val TAG:String = "TodoDao"
     }
 
-    @Query("SELECT * FROM todo_table WHERE completed = 0")
+    @Query("SELECT * FROM todo_table WHERE completed = 0 ORDER by timestamp DESC")
     fun getAllTodos(): Flow<List<Todo>>
 
-    @Query("SELECT * FROM todo_table WHERE completed = 1")
+    @Query("SELECT * FROM todo_table WHERE completed = 1 ORDER by timestamp DESC")
     fun getAllCompletedTodos(): Flow<List<Todo>>
 
     @Insert
@@ -29,8 +29,6 @@ interface TodoDao {
     fun deleteAllTodos()
 
     @Update
-    fun updateTodo(todo: Todo) {
-        Log.d(TAG, "updateTodo: todo -> $todo")
-    }
+    fun updateTodo(todo: Todo)
 
 }

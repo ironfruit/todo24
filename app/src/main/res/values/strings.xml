@@ -19,4 +19,7 @@ Mauris eget mauris feugiat, laoreet ligula sit amet, lacinia ante. Nulla dui dui
     <string name="delete">delete</string>
     <string name="todo_dialog_delete_message">Are you sure you want to delete this todo?</string>
     <string name="completed_text_listempty">No Completed Todos</string>
+    <string name="create_text_listempty">No Todos, make some!</string>
+    <string name="todo_bsd_save">Save</string>
+    <string name="new_todo">New Todo</string>
 </resources>

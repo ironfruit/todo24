@@ -22,4 +22,7 @@ Mauris eget mauris feugiat, laoreet ligula sit amet, lacinia ante. Nulla dui dui
     <string name="create_text_listempty">No Todos, make some!</string>
     <string name="todo_bsd_save">Save</string>
     <string name="new_todo">New Todo</string>
+    <string name="settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

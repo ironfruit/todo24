@@ -1,11 +1,8 @@
 package com.wesleyfranks.todo24.ui.create
 
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -22,7 +19,6 @@ import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
 import com.wesleyfranks.todo24.data.TodoAdapter
 import com.wesleyfranks.todo24.databinding.FragmentCreateBinding
-import com.wesleyfranks.todo24.ui.completed.CompletedFragment
 import com.wesleyfranks.todo24.util.GetTimestamp
 
 class CreateFragment : Fragment(),
@@ -88,7 +84,7 @@ class CreateFragment : Fragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
-            R.id.create_options_deleteAllTodos -> {
+            R.id.todo_settings -> {
                 DeleteAllTodos()
                 true
             }
@@ -109,6 +105,13 @@ class CreateFragment : Fragment(),
     override fun OnRadioButtonChecked(todo: Todo) {
         todo.completed = !todo.completed
         createViewModel.updateTodo(binding.root.context, todo)
+        Snackbar.make(binding.root, "Todo Completed.", Snackbar.LENGTH_LONG).setAction(
+                "Undo",
+                View.OnClickListener {
+                    todo.completed = !todo.completed
+                    createViewModel.updateTodo(binding.root.context, todo)
+                }
+        ).show()
     }
 
     override fun OnItemClicked(todo: Todo) {

@@ -14,7 +14,6 @@ import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
 import com.wesleyfranks.todo24.data.TodoAdapter
 import com.wesleyfranks.todo24.databinding.FragmentCompletedBinding
-import com.wesleyfranks.todo24.util.ConstantVar
 
 class CompletedFragment : Fragment(),
         TodoAdapter.CompletedChecked,
@@ -81,7 +80,7 @@ class CompletedFragment : Fragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
-            R.id.create_options_deleteAllTodos -> {
+            R.id.todo_settings -> {
                 DeleteAllTodos()
                 true
             }
@@ -125,6 +124,13 @@ class CompletedFragment : Fragment(),
     override fun OnRadioButtonChecked(todo: Todo) {
         todo.completed = !todo.completed
         completedViewModel.updateTodo(binding.root.context, todo)
+        Snackbar.make(binding.root, "Todo Updated.", Snackbar.LENGTH_LONG).setAction(
+                "Undo",
+                View.OnClickListener {
+                    todo.completed = !todo.completed
+                    completedViewModel.updateTodo(binding.root.context, todo)
+                }
+        ).show()
     }
 
     override fun onDestroyView() {

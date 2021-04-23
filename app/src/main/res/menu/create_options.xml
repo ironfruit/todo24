@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/create_options_deleteAllTodos"
-        android:icon="@drawable/ic_baseline_delete_24_black"
-        android:title="Delete All Todos" />
+        android:id="@+id/todo_settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/settings"
+        app:showAsAction="ifRoom" />
 </menu>

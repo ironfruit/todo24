@@ -17,7 +17,7 @@
             app:exitAnim="@anim/fragment_fade_exit" />
         <action
             android:id="@+id/action_navigation_create_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/navigation_settings" />
     </fragment>
 
     <fragment
@@ -32,12 +32,19 @@
             app:exitAnim="@anim/fragment_fade_exit" />
         <action
             android:id="@+id/action_navigation_completed_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/navigation_settings" />
     </fragment>
     <fragment
-        android:id="@+id/settingsFragment"
+        android:id="@+id/navigation_settings"
         android:name="com.wesleyfranks.todo24.ui.settings.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_navigation_create"
+            app:destination="@id/navigation_create" />
+        <action
+            android:id="@+id/action_settingsFragment_to_navigation_completed"
+            app:destination="@id/navigation_completed" />
+    </fragment>
 
 </navigation>

@@ -7,6 +7,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -85,17 +86,14 @@ class CreateFragment : Fragment(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.todo_settings -> {
-                DeleteAllTodos()
+                val action = CreateFragmentDirections.actionNavigationCreateToSettingsFragment()
+                findNavController().navigate(action)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun DeleteAllTodos() {
-        createViewModel.deleteAllTodos(binding.root.context)
-        Snackbar.make(binding.root,"All toods have been deleted...",Snackbar.LENGTH_LONG).show()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

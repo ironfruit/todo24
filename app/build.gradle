@@ -40,9 +40,30 @@ android {
 
 dependencies {
 
+    // Work Manager
+    def work_version = "2.5.0"
+
+    // (Java only)
+    implementation "androidx.work:work-runtime:$work_version"
+
+    // Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    // optional - RxJava2 support
+    implementation "androidx.work:work-rxjava2:$work_version"
+
+    // optional - GCMNetworkManager support
+    implementation "androidx.work:work-gcm:$work_version"
+
+    // optional - Test helpers
+    androidTestImplementation "androidx.work:work-testing:$work_version"
+
+    // optional - Multiprocess support
+    implementation "androidx.work:work-multiprocess:$work_version"
+
     // Room
     // ==================
-    def room_version = '2.2.6'
+    def room_version = '2.3.0'
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"

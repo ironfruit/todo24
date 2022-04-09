@@ -1,23 +1,35 @@
 package com.wesleyfranks.todo24.util
 
-import java.time.LocalDateTime
+import android.annotation.SuppressLint
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 class GetTimestamp {
-    var milTime:String = "DDHHMM(Z)MONYY"
-    var time:String = "h:mma MM/dd/YYYY"
+    var milTime:String = "H:mm:ss YYYY-MM-dd"
+    // MIL EX. 09 1630Z JUL 11
+    var time:String = "h:mm:ssa MM/dd/YYYY"
 
-    fun getTimeOnDevice():String{
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern(time)
-        return current.format(formatter)
+    fun getCurrentTime():Long {
+        return System.currentTimeMillis()
     }
 
-    fun getMilTimeOnDevice():String{
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern(milTime)
-        return current.format(formatter)
+    @SuppressLint("SimpleDateFormat")
+    fun formateNonMilDateTime(long: Long):String {
+        val formatter = SimpleDateFormat(time)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = long
+        calendar.timeZone = TimeZone.getDefault()
+        return formatter.format(calendar.time)
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun formateMilDateTime(long: Long):String{
+        val formatter = SimpleDateFormat(milTime)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = long
+        calendar.timeZone = TimeZone.getDefault()
+        return formatter.format(calendar.time)
     }
 
 }

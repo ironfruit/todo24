@@ -2,15 +2,15 @@ package com.wesleyfranks.todo24.data
 
 import androidx.room.*
 import java.sql.RowId
+import java.time.LocalDateTime
 
 
-
-@Entity(tableName = "todo_database")
+@Entity(tableName = "todo_table")
 data class Todo (
-        @ColumnInfo(name = "title") var title: String,
-        @ColumnInfo(name = "timestamp") var timestamp: String,
-        @ColumnInfo(name = "completed") var completed: Boolean = false
+        @PrimaryKey(autoGenerate = true) var pk:Int = 0,
+        var title: String,
+        var timestamp: Long,
+        var completed: Boolean = false
 ){
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "primaryKey") var pk:Int = 0
+
 }

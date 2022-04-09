@@ -1,18 +1,25 @@
 package com.wesleyfranks.todo24.data
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
+import com.wesleyfranks.todo24.ui.create.CreateViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
 class TodoRepository {
 
+    companion object{
+        private const val TAG:String = "TodoRepository"
+    }
+
     var todoDatabase: TodoDatabase? = null
-    lateinit var todoList: LiveData<List<Todo>>
+    lateinit var todoList: Flow<List<Todo>>
 
     fun initializeDB(context: Context){
         todoDatabase = TodoDatabase.getInstance(context)
@@ -20,40 +27,43 @@ class TodoRepository {
 
     fun insertTodo(context: Context, todo: Todo){
         initializeDB(context)
-
         CoroutineScope(IO).launch {
-            todoDatabase!!.TodoDao()!!.insert(todo)
+            todoDatabase!!.TodoDao().insert(todo)
         }
     }
 
     fun updateTodo(context: Context, todo: Todo){
         initializeDB(context)
-
         CoroutineScope(IO).launch {
-            todoDatabase!!.TodoDao()!!.updateTodo(todo)
+            todoDatabase!!.TodoDao().updateTodo(todo)
         }
     }
 
     fun deleteTodo(context: Context, todo: Todo){
+        Log.d(TAG, "deleteTodo: ${todo.title}")
         initializeDB(context)
-
         CoroutineScope(IO).launch {
-            todoDatabase!!.TodoDao()!!.deleteTodo(todo)
+            todoDatabase!!.TodoDao().deleteTodo(todo)
         }
     }
 
     fun deleteAllTodos(context: Context){
         initializeDB(context)
-
         CoroutineScope(IO).launch {
             todoDatabase!!.clearAllTables()
-            todoDatabase!!.TodoDao()!!.deleteAllTodos()
+            todoDatabase!!.TodoDao().deleteAllTodos()
         }
     }
 
-    fun getAllTodos(context: Context) : LiveData<List<Todo>>{
+    fun getAllTodos(context: Context) : Flow<List<Todo>>{
         initializeDB(context)
-        todoList = todoDatabase!!.TodoDao()!!.getAllTodos()
+        todoList = todoDatabase!!.TodoDao().getAllTodos()
+        return todoList
+    }
+
+    fun getAllCompletedTodos(context: Context) : Flow<List<Todo>>{
+        initializeDB(context)
+        todoList = todoDatabase!!.TodoDao().getAllCompletedTodos()
         return todoList
     }
 

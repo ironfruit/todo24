@@ -14,9 +14,9 @@ import com.afollestad.materialdialogs.customview.getCustomView
 import com.google.android.material.snackbar.Snackbar
 import com.wesleyfranks.todo24.R
 import com.wesleyfranks.todo24.data.Todo
-import com.wesleyfranks.todo24.data.TodoDao
 import com.wesleyfranks.todo24.data.TodoRepository
 import com.wesleyfranks.todo24.util.GetTimestamp
+import kotlinx.coroutines.launch
 
 class CreateViewModel : ViewModel() {
 
@@ -26,9 +26,10 @@ class CreateViewModel : ViewModel() {
 
     lateinit var todosList: LiveData<List<Todo>>
     lateinit var createdTodo: Todo
+    val status: MutableLiveData<String> = MutableLiveData()
 
-    fun CreateViewModel(todoDao: TodoDao) {
-        todosList = todoDao.getAllTodos()
+    init {
+        status.value = ""
     }
 
     // insert a todo
@@ -40,6 +41,7 @@ class CreateViewModel : ViewModel() {
     // delete a todo
 
     fun deleteTodo(context: Context, todo: Todo){
+        Log.d(TAG, "deleteTodo: ${todo.title}")
         TodoRepository().deleteTodo(context, todo)
     }
 
@@ -52,54 +54,17 @@ class CreateViewModel : ViewModel() {
     // update a todo
 
     fun updateTodo(context: Context,todo: Todo){
+        Log.d(TAG, "updateTodo: todo -> $todo")
         TodoRepository().updateTodo(context,todo)
     }
 
     // get all Todos
 
     fun getAllTodos(context: Context): LiveData<List<Todo>>{
-        todosList = TodoRepository().getAllTodos(context)
-        return todosList
-    }
-
-    fun fabClicked(view: View, editTodo: Todo? = null){
-        Log.d(TAG, "onViewCreated: I clicked FAB")
-        val md = MaterialDialog(view.context, BottomSheet(LayoutMode.WRAP_CONTENT))
-        md.show {
-            cornerRadius(16f)
-            title(null, "Create Todo")
-            customView(
-                viewRes = R.layout.create_todo_bsd,
-                null,
-                false,
-                false,
-                false,
-                true
-            )
-
-
-            val et = getCustomView().findViewById<EditText>(R.id.create_todo_bsd_et)
-            val button = getCustomView().findViewById<Button>(R.id.create_todo_bsd_savebutton)
-            et.requestFocus()
-            if (editTodo != null){
-                et.setText(editTodo.title)
-            }
-            button.setOnClickListener {
-                val todoTitle = et.editableText.toString().trim()
-                val todoTimestamp = GetTimestamp().getTimeOnDevice()
-                createdTodo = Todo(todoTitle,todoTimestamp)
-                Log.d(TAG, "fabClicked: SAVE BUTTON CLICKED -> $createdTodo")
-                insertTodo(view.context, createdTodo)
-                this.dismiss()
-                Snackbar.make(view, "Todo Added...", Snackbar.LENGTH_SHORT).setAction(
-                    "Undo",
-                    View.OnClickListener {
-                        deleteTodo(view.context, createdTodo)
-                        fabClicked(view, createdTodo)
-                    }
-                ).show()
-            }
+        viewModelScope.launch {
+            todosList = TodoRepository().getAllTodos(context).asLiveData()
         }
+        return todosList
     }
 
 }
